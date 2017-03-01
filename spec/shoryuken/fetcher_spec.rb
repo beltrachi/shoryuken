@@ -33,5 +33,24 @@ describe Shoryuken::Fetcher do
         and_return([])
       subject.fetch(queue_config, 20)
     end
+
+    context 'when receive_message options setted' do
+      let(:aws_setup) do
+        { receive_message: { wait_time_seconds: 20 } }
+      end
+      before { Shoryuken::AwsConfig.setup(aws_setup) }
+
+      it 'forwards the options to receive_messages' do
+        expect(Shoryuken::Client).to receive(:queues).with(queue_name).and_return(queue)
+        expect(queue).to receive(:receive_messages).
+          with(max_number_of_messages: 1,
+               attribute_names: ['All'],
+               message_attribute_names: ['All'],
+               wait_time_seconds: 20
+              ).
+          and_return([])
+        subject.fetch(queue_config, 1)
+      end
+    end
   end
 end

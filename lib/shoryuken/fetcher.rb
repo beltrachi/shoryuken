@@ -31,7 +31,9 @@ module Shoryuken
       # AWS limits the batch size by 10
       limit = limit > FETCH_LIMIT ? FETCH_LIMIT : limit
 
-      options = (Shoryuken.options[:aws][:receive_message] || {}).dup
+      options = (Shoryuken.options[:aws][:receive_message] ||
+                 Shoryuken::AwsConfig.options[:receive_message] ||
+                 {}).dup
       options[:max_number_of_messages] = limit
       options[:message_attribute_names] = %w(All)
       options[:attribute_names] = %w(All)
